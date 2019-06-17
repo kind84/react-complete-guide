@@ -1,26 +1,56 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react'
+import './App.css'
+import Person from './Person/Person'
 
-function App() {
+const App = props => {
+  const [ personsState, setPersonsState ] = useState({
+    persons: [
+      { name: "Paolo", age: 34 },
+      { name: "Mary", age: 26 }
+    ]
+  })
+  
+  const [ messageState, setMessageState ] = useState({
+    message: "Hello"
+  })
+  
+  const switchNameHandler = (newName) => {
+    // personsState.persons[1].name = "Maria"
+    setPersonsState({
+      persons: [
+        { name: "Paolo", age: 34 },
+        { name: newName, age: 26 }        
+      ]
+    })
+  }
+
+  const nameChangedHandler = (event) => {
+    const p0 = {
+      name: event.target.value,
+      age: personsState.persons[0].age
+    }
+    setPersonsState({
+      persons: [
+        p0,
+        personsState.persons[1]
+      ]
+    })
+  }
+  
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Person 
+        name={personsState.persons[0].name} 
+        age={personsState.persons[0].age}
+        change={nameChangedHandler}/>    
+      <Person 
+        name={personsState.persons[1].name} 
+        age={personsState.persons[1].age} 
+        click={switchNameHandler.bind(this, 'Marie')}/>
+      <p>{messageState.message}</p>
+      <button onClick={switchNameHandler.bind(this, 'Maria')}>Switch Name</button>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
