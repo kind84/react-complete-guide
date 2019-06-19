@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import './App.css'
 import Person from './Person/Person'
+import UserInput from './UserInput/UserInput'
+import UserOutput from './UserOutput/UserOutput'
 
 const App = props => {
   const [ personsState, setPersonsState ] = useState({
@@ -12,6 +14,13 @@ const App = props => {
   
   const [ messageState, setMessageState ] = useState({
     message: "Hello"
+  })
+
+  const [ usersState, setUsersState ] = useState({
+    users: [
+      { username: "kind84", password: "Hello!" },
+      { username: "mary92", password: "Zeus?" }
+    ]
   })
   
   const switchNameHandler = (newName) => {
@@ -36,6 +45,19 @@ const App = props => {
       ]
     })
   }
+
+  const usernameChangedHandler = (event) => {
+    const u0 = {
+      username: event.target.value,
+      password: usersState.users[0].password
+    }
+    setUsersState({
+      users: [
+        u0,
+        usersState.users[1]
+      ]
+    })
+  }
   
   return (
     <div className="App">
@@ -49,6 +71,11 @@ const App = props => {
         click={switchNameHandler.bind(this, 'Marie')}/>
       <p>{messageState.message}</p>
       <button onClick={switchNameHandler.bind(this, 'Maria')}>Switch Name</button>
+      <br></br>
+      <br></br>
+      <UserInput change={usernameChangedHandler} username={usersState.users[0].username} />
+      <UserOutput username={usersState.users[0].username} password={usersState.users[0].password}/>
+      <UserOutput username={usersState.users[1].username} password={usersState.users[1].password}/>
     </div>
   )
 }
