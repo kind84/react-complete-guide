@@ -3,6 +3,8 @@ import './App.css'
 import Person from './Person/Person'
 import UserInput from './UserInput/UserInput'
 import UserOutput from './UserOutput/UserOutput'
+import Word from './Word/Word'
+import Char from './Char/Char'
 
 const App = props => {
   const [ personsState, setPersonsState ] = useState({
@@ -23,6 +25,10 @@ const App = props => {
       { id: 2, username: "mary92", password: "Zeus?" }
     ]
   })
+
+  const [ wordState, setWordState ] = useState({
+    word: ''
+  })
   
   const togglePersonsHandler = () => {
     let sp = !personsState.showPersons
@@ -32,7 +38,7 @@ const App = props => {
     })
   }
 
-  const deletePersonHandler = (index) => {
+  const deletePersonHandler = index => {
     const persons = [ ...personsState.persons ]
     persons.splice(index, 1)
     setPersonsState({
@@ -53,7 +59,7 @@ const App = props => {
     })
   }
 
-  const usernameChangedHandler = (event) => {
+  const usernameChangedHandler = event => {
     const u0 = {
       username: event.target.value,
       password: usersState.users[0].password
@@ -66,42 +72,59 @@ const App = props => {
     })
   }
 
-  let persons = null
-  if (personsState.showPersons) {
-    persons = (
-      <div>
-        { 
-          personsState.persons.map((person, index) => {
-            return (
-              <Person 
-                click={deletePersonHandler.bind(this, index)}
-                name={person.name} 
-                age={person.age}
-                key={person.id}
-                change={(event) => nameChangedHandler(event, person.id)}
-              />    
-            )
-          })
-        }
-      </div>
-    )
+  const setWordHandler = event => {
+    setWordState({
+      word: event.target.value
+    })
   }
 
-  let users = (
-    <div>
-      {
-        usersState.users.map(user => {
-          return (
-            <UserOutput 
-              username={user.username} 
-              password={user.password}
-              key={user.id}
-            />
-          )
-        })
-      }
-    </div>
-  )
+  const charClickHandler = index => {
+    const wa = wordState.word.split('')
+    wa.splice(index, 1)
+    const word = wa.join('')
+    setWordState({
+      word: word
+    })
+  }
+
+  let persons = null
+  if (personsState.showPersons) {
+    persons = (personsState.persons.map((person, index) => {
+      return (
+        <Person 
+          click={deletePersonHandler.bind(this, index)}
+          name={person.name} 
+          age={person.age}
+          key={person.id}
+          change={(event) => nameChangedHandler(event, person.id)}
+        />    
+      )
+    }))
+  }
+
+  let users = usersState.users.map(user => {
+    return (
+      <UserOutput 
+        username={user.username} 
+        password={user.password}
+        key={user.id}
+      />
+    )
+  })
+  
+  let chars = null
+  if (wordState.word) {
+    const wa = wordState.word.split('')
+    chars = wa.map((c, index) => {
+      return (
+        <Char 
+          char={c} 
+          key={index}
+          click={charClickHandler.bind(this, index)}
+        />
+      )
+    })
+  }
   
   return (
     <div className="App">
@@ -112,6 +135,12 @@ const App = props => {
       <br></br>
       <UserInput change={usernameChangedHandler} username={usersState.users[0].username} />
       {users}
+      <br></br>
+      <br></br>
+      <input onChange={setWordHandler} value={wordState.word} />
+      <p>Word length: {wordState.word.length}</p>
+      <Word wordLen={wordState.word.length} />
+      {chars}
     </div>
   )
 }
