@@ -7,9 +7,10 @@ import UserOutput from './UserOutput/UserOutput'
 const App = props => {
   const [ personsState, setPersonsState ] = useState({
     persons: [
-      { name: "Paolo", age: 34 },
-      { name: "Mary", age: 26 }
-    ]
+      { id: 1, name: "Paolo", age: 34 },
+      { id: 2, name: "Mary", age: 26 }
+    ],
+    showPersons: false
   })
   
   const [ messageState, setMessageState ] = useState({
@@ -18,31 +19,37 @@ const App = props => {
 
   const [ usersState, setUsersState ] = useState({
     users: [
-      { username: "kind84", password: "Hello!" },
-      { username: "mary92", password: "Zeus?" }
+      { id: 1, username: "kind84", password: "Hello!" },
+      { id: 2, username: "mary92", password: "Zeus?" }
     ]
   })
   
-  const switchNameHandler = (newName) => {
-    // personsState.persons[1].name = "Maria"
+  const togglePersonsHandler = () => {
+    let sp = !personsState.showPersons
     setPersonsState({
-      persons: [
-        { name: "Paolo", age: 34 },
-        { name: newName, age: 26 }        
-      ]
+      ...personsState,
+      showPersons: sp
     })
   }
 
-  const nameChangedHandler = (event) => {
-    const p0 = {
-      name: event.target.value,
-      age: personsState.persons[0].age
-    }
+  const deletePersonHandler = (index) => {
+    const persons = [ ...personsState.persons ]
+    persons.splice(index, 1)
     setPersonsState({
-      persons: [
-        p0,
-        personsState.persons[1]
-      ]
+      ...personsState,
+      persons: persons
+    })
+  }
+
+  const nameChangedHandler = (event, id) => {
+    const pi = personsState.persons.findIndex(p => p.id === id)
+    const person = { ...personsState.persons[pi] }
+    const persons = [ ...personsState.persons ]
+    person.name = event.target.value
+    persons[pi] = person
+    setPersonsState({
+      ...personsState,
+      persons: persons
     })
   }
 
@@ -58,24 +65,53 @@ const App = props => {
       ]
     })
   }
+
+  let persons = null
+  if (personsState.showPersons) {
+    persons = (
+      <div>
+        { 
+          personsState.persons.map((person, index) => {
+            return (
+              <Person 
+                click={deletePersonHandler.bind(this, index)}
+                name={person.name} 
+                age={person.age}
+                key={person.id}
+                change={(event) => nameChangedHandler(event, person.id)}
+              />    
+            )
+          })
+        }
+      </div>
+    )
+  }
+
+  let users = (
+    <div>
+      {
+        usersState.users.map(user => {
+          return (
+            <UserOutput 
+              username={user.username} 
+              password={user.password}
+              key={user.id}
+            />
+          )
+        })
+      }
+    </div>
+  )
   
   return (
     <div className="App">
-      <Person 
-        name={personsState.persons[0].name} 
-        age={personsState.persons[0].age}
-        change={nameChangedHandler}/>    
-      <Person 
-        name={personsState.persons[1].name} 
-        age={personsState.persons[1].age} 
-        click={switchNameHandler.bind(this, 'Marie')}/>
       <p>{messageState.message}</p>
-      <button onClick={switchNameHandler.bind(this, 'Maria')}>Switch Name</button>
+      <button onClick={togglePersonsHandler}>Toggle Persons</button>
+      {persons}
       <br></br>
       <br></br>
       <UserInput change={usernameChangedHandler} username={usersState.users[0].username} />
-      <UserOutput username={usersState.users[0].username} password={usersState.users[0].password}/>
-      <UserOutput username={usersState.users[1].username} password={usersState.users[1].password}/>
+      {users}
     </div>
   )
 }
