@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import './App.css'
-import Person from './Person/Person'
+import Persons from './Persons/Persons'
 import UserInput from './UserInput/UserInput'
 import UserOutput from './UserOutput/UserOutput'
 import Word from './Word/Word'
@@ -89,17 +89,13 @@ const App = props => {
 
   let persons = null
   if (personsState.showPersons) {
-    persons = (personsState.persons.map((person, index) => {
-      return (
-        <Person 
-          click={deletePersonHandler.bind(this, index)}
-          name={person.name} 
-          age={person.age}
-          key={person.id}
-          change={(event) => nameChangedHandler(event, person.id)}
-        />    
-      )
-    }))
+    persons = (
+      <Persons
+        click={deletePersonHandler}
+        persons={personsState.persons}
+        change={nameChangedHandler}
+      />    
+    )
   }
 
   let users = usersState.users.map(user => {
