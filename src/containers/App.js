@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import './App.css'
-import Persons from './Persons/Persons'
-import UserInput from './UserInput/UserInput'
-import UserOutput from './UserOutput/UserOutput'
-import Word from './Word/Word'
-import Char from './Char/Char'
+import Persons from '../components/Persons/Persons'
+import UserInput from '../components/UserInput/UserInput'
+import UserOutput from '../components/UserOutput/UserOutput'
+import Word from '../components/Word/Word'
+import Char from '../components/Char/Char'
+import Cockpit from '../components/Cockpit/Cockpit'
+import AuthContext from '../context/auth-context'
 
 const App = props => {
   const [ personsState, setPersonsState ] = useState({
@@ -12,11 +14,12 @@ const App = props => {
       { id: 1, name: "Paolo", age: 34 },
       { id: 2, name: "Mary", age: 26 }
     ],
-    showPersons: false
+    showPersons: false,
+    authenticated: false
   })
   
   const [ messageState, setMessageState ] = useState({
-    message: "Hello"
+    message: "Persons Manager"
   })
 
   const [ usersState, setUsersState ] = useState({
@@ -87,13 +90,20 @@ const App = props => {
     })
   }
 
+  const loginHandler = () => {
+    setPersonsState({
+      ...personsState,
+      authenticated: true
+    })
+  }
+
   let persons = null
   if (personsState.showPersons) {
     persons = (
       <Persons
-        click={deletePersonHandler}
+        clicked={deletePersonHandler}
         persons={personsState.persons}
-        change={nameChangedHandler}
+        changed={nameChangedHandler}
       />    
     )
   }
@@ -124,9 +134,17 @@ const App = props => {
   
   return (
     <div className="App">
-      <p>{messageState.message}</p>
-      <button onClick={togglePersonsHandler}>Toggle Persons</button>
-      {persons}
+      <AuthContext.Provider value={{
+        authenticated: personsState.authenticated,
+        login: loginHandler
+      }}>
+        <Cockpit 
+          showPersons={personsState.showPersons}
+          message={messageState.message}
+          click={togglePersonsHandler}
+          login={loginHandler} />
+        {persons}
+      </AuthContext.Provider>
       <br></br>
       <br></br>
       <UserInput change={usernameChangedHandler} username={usersState.users[0].username} />
